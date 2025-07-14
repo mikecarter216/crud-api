@@ -1,8 +1,15 @@
-const express = require('express');
-const router = express.Router();
+const mongoose = require('mongoose');
 
-router.get('/test', (req, res) => {
-  res.send('✅ /api/items/test is working!');
+const itemSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  category: String
 });
 
-module.exports = router;
+module.exports = mongoose.model('Item', itemSchema);

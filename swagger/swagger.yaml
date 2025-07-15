@@ -14,6 +14,12 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
     post:
       summary: Create a new item
       requestBody:
@@ -25,6 +31,11 @@ paths:
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+
   /api/items/{id}:
     get:
       summary: Get an item by ID
@@ -37,8 +48,13 @@ paths:
       responses:
         '200':
           description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
         '404':
           description: Not Found
+
     put:
       summary: Update an item
       parameters:
@@ -56,6 +72,13 @@ paths:
       responses:
         '200':
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Not Found
+
     delete:
       summary: Delete an item
       parameters:
@@ -65,13 +88,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: Deleted
+        '404':
+          description: Not Found
 
 components:
   schemas:
     Item:
       type: object
+      required:
+        - name
+        - price
       properties:
         name:
           type: string
@@ -83,3 +111,6 @@ components:
           type: number
         category:
           type: string
+        createdAt:
+          type: string
+          format: date-time

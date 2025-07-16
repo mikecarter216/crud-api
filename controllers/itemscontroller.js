@@ -39,7 +39,6 @@ exports.createItem = async (req, res) => {
   }
 };
 
-// PUT (update) item
 exports.updateItem = async (req, res) => {
   try {
     const { name, description, price, quantity, category } = req.body;

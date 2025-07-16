@@ -7,46 +7,49 @@ const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
-// Passport config
-require('./config/passport');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
+// 🔐 Load Passport config BEFORE routes
+require('./config/passport');
+
+// 📦 Middleware
 app.use(cors());
 app.use(express.json());
 
-// Session config (for OAuth)
+// 🗝️ Session (OAuth)
 app.use(session({
-  secret: 'someSecretValue', // replace with strong secret in production
+  secret: 'someSecretValue', // 🔁 Replace in production
   resave: false,
   saveUninitialized: false,
 }));
 
-// Initialize Passport
+// 🛂 Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Swagger setup
+// 📚 Swagger setup
 const swaggerDocument = YAML.load('./swagger/swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Routes
+// 🛣️ Routes
 const itemRoutes = require('./routes/items');
-const authRoutes = require('./routes/auth'); // NEW
+const authRoutes = require('./routes/auth');
+const protectedRoutes = require('./routes/protectedRoutes'); // ✅ Must come after passport setup
 
 app.use('/api/items', itemRoutes);
-app.use('/auth', authRoutes); // NEW
+app.use('/auth', authRoutes);
+app.use('/', protectedRoutes);
 
-// Test route
+// 🔎 Test route
 app.get('/', (req, res) => {
   res.send('✅ API root is working with OAuth!');
 });
 
+// 📡 MongoDB connect and start server
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
 .then(() => {
   console.log('✅ MongoDB connected');

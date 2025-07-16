@@ -44,7 +44,6 @@ app.get('/', (req, res) => {
   res.send('✅ API root is working with OAuth!');
 });
 
-// DB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true

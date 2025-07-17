@@ -8,31 +8,39 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 
 const app = express();
+app.set('trust proxy', 1); // ✅ Trust Render proxy for HTTPS cookies
 const port = process.env.PORT || 3000;
 
-// 🔐 Load Passport config BEFORE routes
+// Load Passport
 require('./config/passport');
 
-// 📦 Middleware
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: 'https://crud-api-jdvk.onrender.com',
+  credentials: true
+}));
 app.use(express.json());
 
-// 🗝️ Session (OAuth)
+// Session
 app.use(session({
-  secret: 'someSecretValue', // 🔁 Replace in production
+  secret: 'someSecretValue',
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: true,       // ✅ use secure cookies (HTTPS)
+    sameSite: 'none'    // ✅ allow cookies to work cross-origin
+  }
 }));
 
-// 🛂 Passport middleware
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 📚 Swagger setup
+// Swagger
 const swaggerDocument = YAML.load('./swagger/swagger.yaml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// 🛣️ Routes
+// Routes
 const itemRoutes = require('./routes/items');
 const authRoutes = require('./routes/auth');
 const protectedRoutes = require('./routes/protectedRoutes');
@@ -41,12 +49,12 @@ app.use('/api/items', itemRoutes);
 app.use('/auth', authRoutes);
 app.use('/', protectedRoutes);
 
-// 🔎 Test route
+// Test root
 app.get('/', (req, res) => {
   res.send('✅ API root is working with OAuth!');
 });
 
-// 📡 MongoDB connect and start server
+// DB Connect
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

@@ -35,7 +35,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // 🛣️ Routes
 const itemRoutes = require('./routes/items');
 const authRoutes = require('./routes/auth');
-const protectedRoutes = require('./routes/protectedRoutes'); // ✅ Must come after passport setup
+const protectedRoutes = require('./routes/protectedRoutes');
 
 app.use('/api/items', itemRoutes);
 app.use('/auth', authRoutes);

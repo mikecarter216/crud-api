@@ -1,16 +1,18 @@
 openapi: 3.0.0
 info:
-  title: Items API
-  description: API for performing CRUD operations on items
+  title: Items API with Auth
+  description: API for performing CRUD operations with OAuth authentication
   version: 1.0.0
 
 servers:
+  - url: http://localhost:3000
   - url: https://crud-api-jdvk.onrender.com
 
 paths:
   /api/items:
     get:
       summary: Get all items
+      operationId: getAllItems
       responses:
         '200':
           description: Success
@@ -22,6 +24,7 @@ paths:
                   $ref: '#/components/schemas/Item'
     post:
       summary: Create a new item
+      operationId: createItem
       requestBody:
         required: true
         content:
@@ -38,7 +41,8 @@ paths:
 
   /api/items/{id}:
     get:
-      summary: Get an item by ID
+      summary: Get item by ID
+      operationId: getItemById
       parameters:
         - in: path
           name: id
@@ -54,9 +58,9 @@ paths:
                 $ref: '#/components/schemas/Item'
         '404':
           description: Not Found
-
     put:
       summary: Update an item
+      operationId: updateItem
       parameters:
         - in: path
           name: id
@@ -72,15 +76,11 @@ paths:
       responses:
         '200':
           description: Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Item'
         '404':
           description: Not Found
-
     delete:
       summary: Delete an item
+      operationId: deleteItem
       parameters:
         - in: path
           name: id
@@ -93,7 +93,136 @@ paths:
         '404':
           description: Not Found
 
+  /api/categories:
+    get:
+      summary: Get all categories
+      operationId: getAllCategories
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      summary: Create a category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '201':
+          description: Created
+
+  /api/categories/{id}:
+    get:
+      summary: Get category by ID
+      operationId: getCategoryById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Not Found
+    put:
+      summary: Update category
+      operationId: updateCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        '200':
+          description: Updated
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete category
+      operationId: deleteCategory
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Not Found
+
+  /auth/login:
+    post:
+      summary: Log in using OAuth
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@example.com
+                password:
+                  type: string
+                  example: yourpassword
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Unauthorized
+
+  /auth/logout:
+    get:
+      summary: Log out current user
+      operationId: logout
+      responses:
+        '200':
+          description: Logged out
+
+  /protected:
+    get:
+      summary: Access protected route
+      operationId: getProtected
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Access granted
+        '401':
+          description: Unauthorized
+
 components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+
   schemas:
     Item:
       type: object
@@ -110,6 +239,19 @@ components:
         quantity:
           type: number
         category:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
           type: string
         createdAt:
           type: string

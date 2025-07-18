@@ -23,12 +23,12 @@ app.use(express.json());
 
 // Session
 app.use(session({
-  secret: 'someSecretValue',
+  secret: process.env.SESSION_SECRET || 'someSecretValue',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: true,       // ✅ use secure cookies (HTTPS)
-    sameSite: 'none'    // ✅ allow cookies to work cross-origin
+    secure: true,       // 🟢 MUST be true on Render (HTTPS)
+    sameSite: 'none'    // 🟢 To allow cookies across origins
   }
 }));
 

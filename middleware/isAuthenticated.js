@@ -1,6 +1,9 @@
-module.exports = (req, res, next) => {
+function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return next();
+    return next(); // ✅ Allow access
+  } else {
+    res.status(401).json({ message: '❌ Not authorized. Please log in.' });
   }
-  return res.status(401).json({ message: 'Unauthorized' });
-};
+}
+
+module.exports = isAuthenticated;

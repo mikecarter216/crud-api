@@ -26,7 +26,7 @@ router.get('/logout', (req, res, next) => {
     if (err) return next(err);
     req.session.destroy(() => {
       res.clearCookie('connect.sid');
-      res.json({ message: '👋 You have logged out.' });
+      res.json({ message: '👋 You have logged out successfully.' });
     });
   });
 });

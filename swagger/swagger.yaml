@@ -173,7 +173,7 @@ paths:
         '404':
           description: Not Found
 
-  /auth/login:
+  /auth/google:
     post:
       summary: Log in using OAuth
       operationId: login
